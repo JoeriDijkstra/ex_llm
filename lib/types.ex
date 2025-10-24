@@ -205,7 +205,7 @@ defmodule ExLLM.Types do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            llm_backend: String.t() | nil,
+            llm_backend: atom() | nil,
             messages: [ExLLM.Types.message()],
             context: %{optional(atom()) => any()},
             created_at: DateTime.t(),
