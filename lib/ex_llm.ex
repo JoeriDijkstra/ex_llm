@@ -14,22 +14,22 @@ defmodule ExLLM do
       {:ok, response} = ExLLM.chat(:openai, [
         %{role: "user", content: "Hello!"}
       ])
-      
+
       IO.puts(response.content)
-      
+
   ## Advanced API
 
   For full control over the pipeline:
 
       import ExLLM.Pipeline.Request
-      
-      request = 
+
+      request =
         new(:openai, messages)
         |> assign(:temperature, 0.7)
         |> assign(:max_tokens, 1000)
-      
+
       result = ExLLM.run(request, custom_pipeline)
-      
+
   ## Providers
 
   ExLLM supports 14+ providers including:
@@ -66,7 +66,7 @@ defmodule ExLLM do
     * `provider` - The LLM provider atom (e.g., `:openai`, `:anthropic`)
     * `messages` - List of message maps with `:role` and `:content`
     * `opts` - Optional keyword list of options
-    
+
   ## Options
 
     * `:model` - Override the default model
@@ -74,31 +74,31 @@ defmodule ExLLM do
     * `:max_tokens` - Maximum tokens in response
     * `:stream` - Enable streaming (requires callback function)
     * `:timeout` - Request timeout in milliseconds
-    
+
   ## Examples
 
       # Simple chat
       {:ok, response} = ExLLM.chat(:openai, [
         %{role: "user", content: "Hello!"}
       ])
-      
+
       # With options
       {:ok, response} = ExLLM.chat(:anthropic, messages,
         model: "claude-3-opus",
         temperature: 0.5,
         max_tokens: 1000
       )
-      
+
   ## Builder API Alternative
 
   For pipeline customization, prefer the builder API:
-      
-      {:ok, response} = 
+
+      {:ok, response} =
         ExLLM.build(:openai, messages)
         |> ExLLM.with_model("gpt-4")
         |> ExLLM.with_cache(ttl: 3600)
         |> ExLLM.execute()
-      
+
   ## Return Values
 
   Returns `{:ok, response}` on success where response includes:
@@ -107,7 +107,7 @@ defmodule ExLLM do
     * `:model` - The model used
     * `:usage` - Token usage information
     * `:cost` - Calculated cost in USD
-    
+
   Returns `{:error, error}` on failure.
   """
   @spec chat(atom(), list(map()), keyword()) ::
@@ -147,20 +147,20 @@ defmodule ExLLM do
     * `messages` - List of message maps
     * `callback` - Function called for each chunk
     * `opts` - Optional keyword list of options
-    
+
   ## Callback Function
 
   The callback receives chunks with the following structure:
     * `:content` - The text content of this chunk
     * `:done` - Boolean indicating if streaming is complete
     * `:usage` - Token usage (only in final chunk)
-    
+
   ## Examples
 
       ExLLM.stream(:openai, messages, fn
         %{done: true, usage: usage} ->
           IO.puts("\\nTotal tokens: \#{usage.total_tokens}")
-          
+
         %{content: content} ->
           IO.write(content)
       end)
@@ -200,12 +200,12 @@ defmodule ExLLM do
 
     * `request` - An `ExLLM.Pipeline.Request` struct
     * `pipeline` - List of plug modules or `{module, opts}` tuples
-    
+
   ## Examples
 
       # Build custom request
       request = ExLLM.Pipeline.Request.new(:openai, messages)
-      
+
       # Define custom pipeline
       pipeline = [
         ExLLM.Plugs.ValidateProvider,
@@ -215,7 +215,7 @@ defmodule ExLLM do
         ExLLM.Plugs.ExecuteRequest,
         ExLLM.Plugs.TrackCost
       ]
-      
+
       # Run it
       result = ExLLM.run(request, pipeline)
   """
@@ -370,12 +370,12 @@ defmodule ExLLM do
 
       # Single text embedding
       {:ok, response} = ExLLM.embeddings(:openai, "Hello world")
-      
+
       # Multiple texts
       {:ok, response} = ExLLM.embeddings(:openai, ["Hello", "World"])
-      
+
       # With options
-      {:ok, response} = ExLLM.embeddings(:openai, "Hello", 
+      {:ok, response} = ExLLM.embeddings(:openai, "Hello",
         model: "text-embedding-3-large",
         dimensions: 512
       )
@@ -409,7 +409,7 @@ defmodule ExLLM do
 
       {:ok, models} = ExLLM.list_models(:openai)
       # Returns list of model structs with id, context_window, etc.
-      
+
       {:ok, models} = ExLLM.list_models(:anthropic)
       # => [
       #   %{id: "claude-3-5-sonnet-20241022", context_window: 200000, ...},
@@ -427,6 +427,7 @@ defmodule ExLLM do
   ## Session Management Functions
 
   @doc "Creates a new session for conversation management. See ExLLM.Session.new_session/2 for details."
+  @spec new_session(atom(), Keyword.t()) :: ExLLM.Types.Session.t()
   defdelegate new_session(provider, opts \\ []), to: ExLLM.Session
 
   @doc "Adds a message to a session. See ExLLM.Session.add_message/3 for details."
@@ -750,7 +751,7 @@ defmodule ExLLM do
       ExLLM.configured?(:openai)
       # => true
 
-      ExLLM.configured?(:unknown_provider)  
+      ExLLM.configured?(:unknown_provider)
       # => false
   """
   @spec configured?(atom()) :: boolean()
