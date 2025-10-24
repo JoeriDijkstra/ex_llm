@@ -60,7 +60,7 @@ defmodule ExLLM.Core.Session do
       session = ExLLM.Session.new("anthropic")
       session = ExLLM.Session.new("openai", name: "My Chat")
   """
-  @spec new(String.t() | atom() | nil, keyword()) :: Types.Session.t()
+  @spec new(atom() | nil, keyword()) :: Types.Session.t()
   def new(backend \\ nil, opts \\ []) do
     name = Keyword.get(opts, :name)
     session_id = generate_session_id()
